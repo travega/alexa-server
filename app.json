@@ -1,0 +1,11 @@
+{
+  "name": "Alexa Server",
+  "description": "Simple backend to serve Alexa skills",
+  "repository": "https://github.com/travega/alexa-server",
+  "logo": "https://m.media-amazon.com/images/G/01/mobile-apps/dex/avs/docs/ux/branding/mark1._TTH_.png",
+  "keywords": ["node", "express", "heroku", "alexa", "mongo", "heroku connect", "postgres"],
+  "addons": [
+    "mongolab",
+    "heroku-postgresql:hobby-basic"
+  ]
+}
