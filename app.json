@@ -6,6 +6,9 @@
   "keywords": ["node", "express", "heroku", "alexa", "mongo", "heroku connect", "postgres"],
   "addons": [
     "mongolab",
-    "heroku-postgresql:hobby-basic"
+    "heroku-postgresql:hobby-basic",
+    "herokuconnect:demo",
+    "logdna:quaco",
+    "heroku-redis:hobby-dev"
   ]
 }
