@@ -62,7 +62,7 @@ function listFittingItemsRespTemplate(itemList) {
 }
 
 function listBasketItemsRespTemplate(itemList) {
-  return `here's whats in your basket: ${itemList}`;
+  return itemList ? `here's whats in your basket: ${itemList}` : 'hmm, it doesn\'t look like you\'ve added anything to your baseket yet';
 }
 
 function addBasketItemRespTemplate(item, size) {
