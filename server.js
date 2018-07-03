@@ -58,7 +58,7 @@ function alexaResponse(str, sessionId) {
 }
 
 function listFittingItemsRespTemplate(itemList) {
-   return `here's whats you've selected today: ${itemList}`;
+   return `here's what you've selected today: ${itemList}`;
 }
 
 function listBasketItemsRespTemplate(itemList) {
