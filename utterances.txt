@@ -33,6 +33,13 @@ add the {item} in a size {size} to my Basket
 I'm going to take the {item} in a size {size}
 I'll take the {item} in a size {size}
 
+List Basket Items
+-----------------
+
+what's in my Basket
+what stuff am I taking
+what am I taking
+
 
 Add All Items to Basket
 -----------------------

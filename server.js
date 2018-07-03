@@ -66,11 +66,11 @@ function listBasketItemsRespTemplate(itemList) {
 }
 
 function addBasketItemRespTemplate(item, size) {
-  return `no problem, Sarah. I've added the ${item} in a size ${size}, to your basket`;
+  return `no problem Jane, I've added the ${item} in a size ${size}, to your basket`;
 }
 
 function requestAssistanceRespTemplate(item, size) {
-  return `ok, Sarah. I've requested a size ${size} in the ${item} for you. It should be with you shortly.`;
+  return `ok Jane, I've requested a size ${size} in the ${item} for you. It should be with you shortly.`;
 }
 
 // Alexa endpoints
