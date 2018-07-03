@@ -1,0 +1,43 @@
+Wake + Invocation Phrase
+------------------------
+
+"Echo, ask my fitting assistant"
+
+
+List Fitting Items
+------------------
+
+what do I have?
+what am I trying again?
+what's here?
+what have I got again?
+what am I trying today?
+
+
+Request Assistance
+------------------
+
+if someone could get me a size {size} in the {item}
+if someone could get me the {item} in a size {size}
+to get me a size {size} in the {item}
+to get me the {item} in a size {size}
+
+
+Add an Item to Basket
+------------------
+
+add a size {size} in the {item} to my Basket
+I'm going to take a size {size} in the {item}
+I'll take a size {size} in the {item}
+add the {item} in a size {size} to my Basket
+I'm going to take the {item} in a size {size}
+I'll take the {item} in a size {size}
+
+
+Add All Items to Basket
+-----------------------
+
+add all items to my Basket
+add everything to my Basket
+I'll take everything
+I'm going to take everything
