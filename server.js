@@ -1,38 +1,36 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var cors = require('cors');
-var app = express();
+require('dotenv').config();
+var express     = require('express');
+var nforce      = require('nforce');
+var bodyParser  = require('body-parser');
+var cors        = require('cors');
+var app         = express();
 
 var mongodb = require('mongodb'),
     mongoClient = mongodb.MongoClient,
     ObjectID = mongodb.ObjectID, // Used in API endpoints
     db; // We'll initialize connection below
 
+// var org = nforce.createConnection({
+//   clientId: process.env.SF_CLIENT_ID,
+//   clientSecret: process.env.SF_CLIENT_SECRET,
+//   redirectUri: process.env.SF_AUTH_REDIRECT_URL,
+//   mode: 'single' // optional, 'single' or 'multi' user mode, multi default
+// });
+
 app.use(bodyParser.json());
 app.set('port', process.env.PORT || 8080);
-app.use(cors()); // CORS (Cross-Origin Resource Sharing) headers to support Cross-site HTTP requests
-app.use(express.static("www")); // Our Ionic app build is in the www folder (kept up-to-date by the Ionic CLI using 'ionic serve')
+app.use(cors());
 
-/*
- *  If you are running locally you can reference your MongoDB instance in Heroku by adding the following"
- *
- *     var MONGODB_URI = process.env.MONGODB_URI || <your_mongodb_url>;
- *
- *  The way to get the mongodb URL is with the following command, after you create the Heroku instance:
- *
- *     heroku config | grep MONGODB_URI
- *
-*/
-
-var MONGODB_URI = process.env.MONGODB_URI; // || <your_mongodb_url>;
+var MONGODB_URI = process.env.MONGODB_URI;
 
 // Initialize database connection and then start the server.
-mongoClient.connect(MONGODB_URI, function (err, database) {
+mongoClient.connect(MONGODB_URI, { useNewUrlParser: true }, (err, client) => {
   if (err) {
+    console.log(err);
     process.exit(1);
   }
 
-  db = database; // Our database object from mLab
+  db = client.db(new URL(MONGODB_URI).pathname.replace("/", "")); // Our database object from mLab
 
   console.log("Database connection ready");
 
@@ -43,7 +41,7 @@ mongoClient.connect(MONGODB_URI, function (err, database) {
 });
 
 function alexaResponse(str, sessionId) {
-return {
+  return {
     "version": "string",
     "sessionAttributes": {
         "key": sessionId
@@ -59,16 +57,20 @@ return {
   }
 }
 
-function listOptionsRespTemplate(showList) {
-   return `here's whats on tv: ${showList}`;
+function listFittingItemsRespTemplate(itemList) {
+   return `here's whats you've selected today: ${itemList}`;
 }
 
-function listItemsRespTemplate(watchList) {
-  return `here's whats on your watch list: ${watchList}`;
+function listBasketItemsRespTemplate(itemList) {
+  return `here's whats in your basket: ${itemList}`;
 }
 
-function addItemRespTemplate(showName) {
-  return `ok, I've added ${showName}, to your watch list`;
+function addBasketItemRespTemplate(item, size) {
+  return `no problem Sarah, I've added the pink bra ${item} in a size ${size}, to your basket`;
+}
+
+function requestAssistanceRespTemplate(item, size) {
+  return `ok Sarah, I've requested a size ${size} in the ${item} for you. It should be with you shortly.`;
 }
 
 // Alexa endpoints
@@ -76,61 +78,82 @@ app.post("/api/alexa", function (req, res) {
   var sessionId = req.body.session.sessionId;
 
   switch (req.body.request.intent.name) {
-      case "ListOptions":
-        db.collection("tvShows").find({}).toArray(function (err, docs) {
+      case "ListFittingItems":
+        db.collection("fittingItems").find({}).toArray(function (err, docs) {
 
           if (err) {
             handleError(res, err.message, "Failed to get shows");
           } else {
-            var showList = "";
+            var itemList = "";
             console.log("DOCS: " + docs);
             docs.forEach(item => {
                 console.log("DOC: " + JSON.stringify(item));
-                showList += `${item.tvShow}, `;
+                itemList += `the ${item.name}, in a size ${item.size}; `;
             });
 
-            var responseObject = alexaResponse(listOptionsRespTemplate(showList), sessionId);
+            var responseObject = alexaResponse(listFittingItemsRespTemplate(itemList), sessionId);
 
             res.status(200).json(responseObject);
           }
         });
         return;
-    case "ListItems":
-        db.collection("watchList").find({}).toArray(function (err, docs) {
-          if (err) {
-            handleError(res, err.message, "Failed to get todos");
-          } else {
-            var watchList = "";
-            console.log("DOCS: " + JSON.stringify(docs));
-            docs.forEach(item => {
+      case "RequestAssistance":
+          var item = req.body.request.intent.slots.item.value;
+          var size = req.body.request.intent.slots.size.value;
+
+          var newRequest = {
+            item: item,
+            size: size
+          }
+
+          db.collection("assistanceRequest").insertOne(newRequest, function (err, doc) {
+
+            if (err) {
+              handleError(res, err.message, "Failed to add todo");
+            } else {
+              var responseObject = alexaResponse(requestAssistanceRespTemplate(item, size), sessionId);
+              res.status(200).json(responseObject);
+            }
+          });
+        return;
+      case "AddToBasket":
+          var item = req.body.request.intent.slots.item.value;
+          var size = req.body.request.intent.slots.size.value;
+
+          var basketItem = {
+            item: item,
+            size: size
+          }
+
+          db.collection("basketItems").insertOne(basketItem, function (err, doc) {
+
+            if (err) {
+              handleError(res, err.message, "Failed to add todo");
+            } else {
+              var responseObject = alexaResponse(addBasketItemRespTemplate(item, size), sessionId);
+              res.status(200).json(responseObject);
+            }
+          });
+          return;
+      case "ListBasketItems":
+          db.collection("basketItems").find({}).toArray(function (err, docs) {
+
+            if (err) {
+              handleError(res, err.message, "Failed to get shows");
+            } else {
+              var itemList = "";
+              console.log("DOCS: " + docs);
+              docs.forEach(item => {
                 console.log("DOC: " + JSON.stringify(item));
-                watchList += `${item.tvShow}, `;
-            });
-            var responseObject = alexaResponse(listItemsRespTemplate(watchList), sessionId);
-            res.status(200).json(responseObject);
-          }
-        });
+                itemList += `${item.name}, in a size ${item.size} `;
+              });
 
-        return;
-      case "AddItem":
-        snowName = req.body.request.intent.slots.tv_show.value;
+              var responseObject = alexaResponse(listBasketItemsRespTemplate(itemList), sessionId);
 
-        var newTvShow = {
-            tvShow: snowName
-        }
-
-        db.collection("watchList").insertOne(newTvShow, function (err, doc) {
-
-          if (err) {
-            handleError(res, err.message, "Failed to add todo");
-          } else {
-            var responseObject = alexaResponse(addItemRespTemplate(doc.ops[0].tvShow), sessionId);
-            res.status(200).json(responseObject);
-          }
-        });
-
-      return;
-
+              res.status(200).json(responseObject);
+            }
+          });
+          return;
   }
 });
 
@@ -142,13 +165,16 @@ app.post("/api/alexa", function (req, res) {
  *     }
  *
 */
-app.post("/api/tvshow", function (req, res) {
-  var newTvShow = { tvShow: req.body.tvShow }
+app.post("/api/fittingItems", function (req, res) {
+  var fittingItem = { 
+    item: req.body.item,
+    size: req.body.size 
+  }
 
-  db.collection("tvShows").insertOne(newTvShow, function (err, doc) {
+  db.collection("fittingItems").insertOne(fittingItem, function (err, doc) {
 
     if (err) {
-      handleError(res, err.message, "Failed to add TV Show");
+      handleError(res, err.message, "Failed to add Fitting Item");
     } else {
       res.status(201).json(doc.ops[0]);
     }
