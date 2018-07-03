@@ -66,7 +66,7 @@ function listBasketItemsRespTemplate(itemList) {
 }
 
 function addBasketItemRespTemplate(item, size) {
-  return `no problem Sarah, I've added the pink bra ${item} in a size ${size}, to your basket`;
+  return `no problem Sarah, I've added the ${item} in a size ${size}, to your basket`;
 }
 
 function requestAssistanceRespTemplate(item, size) {
@@ -88,7 +88,7 @@ app.post("/api/alexa", function (req, res) {
             console.log("DOCS: " + docs);
             docs.forEach(item => {
                 console.log("DOC: " + JSON.stringify(item));
-                itemList += `the ${item.name}, in a size ${item.size}; `;
+                itemList += `the ${item.item}, in a size ${item.size}; `;
             });
 
             var responseObject = alexaResponse(listFittingItemsRespTemplate(itemList), sessionId);
