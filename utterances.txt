@@ -48,3 +48,15 @@ add all items to my Basket
 add everything to my Basket
 I'll take everything
 I'm going to take everything
+
+
+DEMO
+----
+
+1. Echo, ask my fitting assistant what am I trying today?
+
+2. Echo, tell my fitting assistant to get me a size {36D} in the {black maternity bra}
+
+3. Echo, tell my fitting assistant I'll take the {beige support bra} in a size {34 D}
+
+4. Echo, ask my fitting assistant what's in by basket

@@ -10,5 +10,25 @@
     "herokuconnect:demo",
     "logdna:quaco",
     "heroku-redis:hobby-dev"
-  ]
+  ],
+  "env": {
+    "SF_USERNAME": {
+      "mandatory": true
+    },
+    "SF_PASSWORD": {
+      "mandatory": true
+    },
+    "SF_TOKEN": {
+      "mandatory": true
+    },
+    "SF_CLIENT_ID": {
+      "mandatory": true
+    },
+    "SF_CLIENT_SECRET": {
+      "mandatory": true
+    },
+    "SF_AUTH_REDIRECT_URL": {
+      "mandatory": true
+    }
+  }
 }
