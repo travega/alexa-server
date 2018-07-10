@@ -23,7 +23,7 @@ module.exports = function(item, size) {
     //create the object
     var newCase = nforce.createSObject('Case');
     newCase.set('Subject', 'FitAssist: Jane - fitting room 4');
-    newCase.set('Customer_Name__c', 'Jane Smith');
+    newCase.set('Customer_Name__c', 'Jane Moon');
     newCase.set('Priority', 'High');
     newCase.set('Origin', 'Fitting Room Assistant');
     newCase.set('Type', 'FitAssist');
