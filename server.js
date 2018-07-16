@@ -172,6 +172,17 @@ app.post("/api/fittingItems", function (req, res) {
   });
 });
 
+app.delete('/basket/items', (re, res) => {
+  db.collection("basketItems").drop((err, delOK) => {
+    if (err) throw err;
+    if (delOK) console.log("Basket items deleted");
+    
+    res.status(200).json({
+      message: "Collection successfully deleted"
+    });
+  });
+});
+
 // Error handler for the api
 function handleError(res, reason, message, code) {
   console.log("API Error: " + reason);
